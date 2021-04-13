@@ -3,7 +3,7 @@
 
 usage() {
     print
-    print "${bold}Build a raw transaction file ready to be signed, stored as .raw file.${normal}"
+    print "${bold}Build a draft transaction file ready to be signed, stored as .draft file.${normal}"
     print "All output is logged along with executed cardano-cli commands."
     print
     print "Usage: ${scriptName} --name NAME --ada ADA | --lovelace LOVELACE | --key-deposit | --pool-deposit --from ADDRESS "
@@ -60,10 +60,10 @@ main() {
     summarize
     collectUtxo
     getCurrentSlot
-    buildDraftTx
+    buildTempTx
     calculateFee
     calculateChange
-    buildRawTx
+    buildDraftTx
     cleanup
 }
 
@@ -107,19 +107,18 @@ getCurrentSlot() {
     print "Current slot is %s; tx is valid for 2 hours until %s" ${currentSlot} $(( ${currentSlot} + ${slotOffset} ))
 }
 
-buildDraftTx() {
-    local changeOut=$(( ${totalBalance} - ${amount}))
+buildTempTx() {
     local command="cardano-cli transaction build-raw ${txInArg} --tx-out ${fromAddress}+0"
     [[ ${toAddress} ]] && command+=" --tx-out ${toAddress}+0"
-    command+=" --invalid-hereafter $(( ${currentSlot} + ${slotOffset} )) --fee 0 --out-file ${txDraftFile} --${era}"
+    command+=" --invalid-hereafter $(( ${currentSlot} + ${slotOffset} )) --fee 0 --out-file ${txTempFile} --${era}"
     [[ ${certificateFileArg} ]] && command+=" ${certificateFileArg}"
-    execute "${command}" "build draft tx"
+    execute "${command}" "build temp tx to calculate fee"
     print
-    print "Created draft transaction to calculate fee"
+    print "Created temp transaction to calculate fee"
 }
 
 calculateFee() {
-    local command="cardano-cli transaction calculate-min-fee --tx-body-file ${txDraftFile} --tx-in-count ${txCount}"
+    local command="cardano-cli transaction calculate-min-fee --tx-body-file ${txTempFile} --tx-in-count ${txCount}"
     command+=" --tx-out-count ${txOutCount} --mainnet --witness-count $(( ${certificateCount} + 1 )) --byron-witness-count 0"
     command+=" --protocol-params-file ${protocolParamsFile}"
     local out=$(execute "${command}" "calculate fee")
@@ -141,30 +140,29 @@ calculateChange() {
     (( ${changeOut} < 0 )) && fail "\ninsufficient funds"
 }
 
-buildRawTx() {
+buildDraftTx() {
     local command="cardano-cli transaction build-raw ${txInArg} --tx-out ${fromAddress}+${changeOut}"
     [[ ${toAddress} ]] && command+=" --tx-out ${toAddress}+${amount}"
     command+=" --invalid-hereafter $(( ${currentSlot} + ${slotOffset} )) --fee ${fee}"
     [[ ${certificateFileArg} ]] && command+=" ${certificateFileArg}"
-    command+="  --${era} --out-file ${txRawFile}"
+    command+="  --${era} --out-file ${txDraftFile}"
     execute "${command}" "build raw tx"
     print
-    print "Created raw transaction ready to be signed in file ${bold}${txRawFile}${normal}.\n"
+    print "Created draft transaction ready to be signed in file ${bold}${txDraftFile}${normal}.\n"
     print "${bold}Please double check all values before signing and submitting!${normal}\n"
     printf "Log at ${bold}${txLogFile}${normal}.\n\n"
 }
 
 cleanup() {
-    rm ${txDraftFile} > /dev/null 2>&1
+    rm ${txTempFile} > /dev/null 2>&1
 }
 
 init() {
     era=mary-era
     scriptName=$(basename "${0}")
-    terminal=$(tty)
     txName=
+    txTempFile=
     txDraftFile=
-    txRawFile=
     txLogFile=
     protocolParamsFile="pool.params"
     slotOffset=7200
@@ -251,11 +249,11 @@ setTxName() {
     local answer
     assertArg "${1}" "--name" "NAME"
     txName="${1}"
+    txTempFile="${txName}.temp"
     txDraftFile="${txName}.draft"
-    txRawFile="${txName}.raw"
     txLogFile="${txName}.log"
-    if [[ -e ${txRawFile} ]]; then
-        read -p "Overwrite existing ${txRawFile} file? (y/n) " answer
+    if [[ -e ${txDraftFile} ]]; then
+        read -p "Overwrite existing ${txDraftFile} file? (y/n) " answer
         [[ ${answer} == "y" ]] || exit 0
     fi
 }
@@ -378,17 +376,15 @@ print() {
     fi
 }
 
-
 printRed() {
     print "${red}${@}${normal}\n"
 }
-
 
 colorStdErrRed() {
     local error
     while read error
     do
-        printRed "${error}" > ${terminal}
+        printRed "${error}"
     done
 }
 

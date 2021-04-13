@@ -2,30 +2,30 @@
 
 usage() {
     print
-    print "${bold}Sign raw transaction with one or more keys and store as .signed file${normal}"
+    print "${bold}Sign draft transaction with one or more keys and store as .signed file${normal}"
     print "All output is logged along with executed cardano-cli commands."
     print
     print "Usage: ${scriptName} --name NAME --signing-key-file FILE [--signing-key-file FILE]"
     print
-    print "Example: sign key-deposit.raw transaction file with stake and payment keys"
+    print "Example: sign key-deposit.draft transaction file with stake and payment keys"
     print
     print "${scriptName} --name key-deposit \ "
     print "          --signing-key-file stake.skey \ "
     print "          --signing-key-file payment.skey"
     print
-    print "Example: sign pool-deposit.raw transaction file with node (pool), stake and payment key."
+    print "Example: sign pool-deposit.draft transaction file with node (pool), stake and payment key."
     print
     print "${scriptName} --name pool-deposit \ "
     print "          --signing-key-file node.skey \ "
     print "          --signing-key-file stake.skey \ "
     print "          --signing-key-file payment.skey"
     print
-    print "Example: sign tip.raw transaction file with payment key"
+    print "Example: sign tip.draft transaction file with payment key"
     print
     print "${scriptName} --name tip \ "
     print "          --signing-key-file payment.skey"
     print
-    print "Example: sign tx.raw transaction file with payment key"
+    print "Example: sign tx.draft transaction file with payment key"
     print
     print "${scriptName} --name tx \ "
     print "          --signing-key-file payment.skey "
@@ -45,14 +45,14 @@ main() {
 }
 
 summarize() {
-    print "\n===== $(date) ${bold}Signing raw transaction${normal} =====\n"
-    print "   ${cyan}tx${normal}: ${bold}%s${normal}" "${txRawFile}"
+    print "\n===== $(date) ${bold}Signing draft transaction${normal} =====\n"
+    print "   ${cyan}tx${normal}: ${bold}%s${normal}" "${txDraftFile}"
     print " ${cyan}%s${normal}: ${bold}%s${normal}" "${signingKeyDescription}" "${signingKeys}"
 }
 
 buildSignedTx() {
-    execute "cardano-cli transaction sign --tx-body-file ${txRawFile} ${signingKeyFileArg} --mainnet --out-file ${txSignedFile}" \
-            "sign tx"
+    execute "cardano-cli transaction sign --tx-body-file ${txDraftFile} ${signingKeyFileArg} --mainnet " \
+            "--out-file ${txSignedFile}" "sign tx"
     print
     print "Created signed transaction ready to be submitted in file ${bold}${txSignedFile}${normal}.\n"
     printf "Log at ${bold}${txLogFile}${normal}.\n\n"
@@ -60,9 +60,8 @@ buildSignedTx() {
 
 init() {
     scriptName=$(basename "${0}")
-    terminal=$(tty)
     txName=
-    txRawFile=
+    txDraftFile=
     txSignedFile=
     txLogFile=
     flag="--.*"
@@ -128,10 +127,10 @@ logCommand() {
 setTxName() {
     assertArg "${1}" "--name" "NAME"
     txName="${1}"
-    txRawFile="${txName}.raw"
+    txDraftFile="${txName}.draft"
     txSignedFile="${txName}.signed"
     txLogFile="${txName}.log"
-    [[ -e ${txRawFile} ]] || usage "${txRawFile} not found"
+    [[ -e ${txDraftFile} ]] || usage "${txDraftFile} not found"
     if [[ -e ${txSignedFile} ]]; then
         read -p "Overwrite existing ${txSignedFile} file? (y/n) " answer
         [[ ${answer} == "y" ]] || exit 0
