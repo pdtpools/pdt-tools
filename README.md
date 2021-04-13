@@ -13,4 +13,4 @@ Each requires use of a `--name` option that is used to name the transaction and 
 
 The draft and sign steps have no permanent effect and can even be repeated; however, the submit step is clearly different. To enable experimenting with the entire flow, the `submitTx.sh` script supports a `--dry-run` option which will cause it to skip the actual submit command but log it anyway.
   
-TODO
+
