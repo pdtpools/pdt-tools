@@ -6,15 +6,15 @@ excellent [CoinCashew](https://www.coincashew.com/coins/overview-ada/guide-how-t
 register our stake pool ([PDT1](https://pdtpools.io/)) and thought that at least some of it could be improved; this is our 
 attempt using wrapper scripts. 
 
-> An important goal for these scripts is to submit a PR to CoinCashew that updates the steps to use them.
+> An important goal of ours is to submit a PR to CoinCashew updating the pool registration steps to use these scripts.
 
 As you are likely aware if you've gotten here, drafting, signing and submitting are done separately so that signing can occur 
 on an air-gapped machine. While drafting is really the only step that is complex, we've created scripts for each step to be 
 consistent, both in usage and logging:
 
-* `draftTx.sh`
-* `signTx.sh`
-* `submitTx.sh`
+* [draftTx.sh](#drafting-a-transaction)
+* [signTx.sh](#signing-a-transaction)
+* [submitTx.sh](#submitting-a-transaction)
 
 Each requires use of a `--name` option that is used to name the transaction and log file (the latter will include the actual 
 `cardano-cli` commands issued). For example, say you're creating a key deposit transaction and you specify `--name key-deposit` 
@@ -30,7 +30,34 @@ To give you an idea of what the draftTx.sh script does, here is example terminal
 
 ![plot](./img/draft-transaction.png)
 
-## Drafting a Transaction
+### Example
+
+In this example we'll submit a key-deposit for a new pool. This assumes the following files exist on the specified machines:
+
+* `payment.addr` contains the pool's payment address (block producer)
+* `stake.cert` contains the stake certificate (block producer)
+* `stake.skey` contains the pool's signing key (air-gapped)
+* `payment.skey` contains the pool's signing key (air-gapped)
+
+
+1. On the block producer node run:
+```bash
+draftTx.sh --name key-deposit --key-deposit --from $(cat payment.addr) --certificate-file stake.cert
+```
+
+2. Copy the `key-deposit.draft` file to the air-gapped machine and on it run:
+```bash
+signRawTx.sh --name key-deposit --signing-key-file stake.skey --signing-key-file payment.skey
+```
+
+3. Copy the `key-deposit.signed` file to the block producer machine and on it run:
+```bash
+submitTx.sh --name key-deposit
+```
+
+Note that in the last step we did *not* use the `--dry-run` option.
+
+### Drafting a Transaction
 ```
 > draftTx.sh --help
 
@@ -78,7 +105,7 @@ draftTx.sh --name tx \
 --from $(cat from.addr) \
 --to $(cat to.addr)
 ```
-## Signing a transaction
+### Signing a transaction
 ```
 > signTx.sh --help
 
@@ -111,7 +138,7 @@ signTx.sh --name tx \
           --signing-key-file payment.skey
 ```
  
-## Submitting a Transaction
+### Submitting a Transaction
 
 ``` 
 > submitTx.sh
@@ -126,28 +153,3 @@ Options:
     --dry-run | --dry     Log but do no execute submit command.
 ```
                                                                
-## Putting it Together
-          
-In this example we'll submit a key-deposit for a new pool. This assumes the following files exist on the specified machines:
-
-* `payment.addr` contains the pool's payment address (block producer)
-* `stake.cert` contains the stake certificate (block producer)
-* `payment.skey` contains the pool's signing key (air-gapped)
-
-
-1. On the block producer node run:
-```bash
-draftTx.sh --name key-deposit --key-deposit --from $(cat payment.addr) --certificate-file stake.cert
-```
-
-2. Copy the `key-deposit.draft` file to the air-gapped machine and on it run:
-```bash
-signRawTx.sh --name key-deposit --signing-key-file stake.skey --signing-key-file payment.skey
-```
-
-3. Copy the `key-deposit.signed` file to the block producer machine and on it run:
-```bash
-submitTx.sh --name key-deposit
-```
-
-Note that in the last step we did *not* use the `--dry-run` option.
