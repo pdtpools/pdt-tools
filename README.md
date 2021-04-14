@@ -26,7 +26,7 @@ The draft and sign steps have no permanent effect and can even be repeated; howe
 enable experimenting with the entire flow, the `submitTx.sh` script supports a `--dry-run` option which will cause it to skip 
 the actual submit command but log it anyway.
                                     
-To give you an idea of what the draftTx.sh script does, here is example terminal output:
+Here is example output of the `draftTx.sh` script to show what it does:
 
 ![plot](./img/draft-transaction.png)
 
