@@ -17,7 +17,7 @@ consistent, both in usage and logging:
 * [submitTx.sh](#submitting-a-transaction)
 
 Each requires use of a `--name` option that is used to name the transaction and log file (the latter will include the actual 
-`cardano-cli` commands issued). For example, say you're creating a key deposit transaction and you specify `--name key-deposit` 
+`cardano-cli` commands issued). For example, say you're creating a key deposit transaction where you specify `--name key-deposit` 
 in all three steps. The first step would result in `key-deposit.draft` and `key-deposit.log` files. The second would expect the 
 `key-deposit.draft` file and produce a `key-deposit.signed` file as well as append to the `key-deposit.log` file. Finally, the 
 third would expect the `key-deposit.signed` file and append to the `key-deposit.log` file.
