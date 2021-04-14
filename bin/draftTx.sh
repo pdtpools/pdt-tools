@@ -18,14 +18,14 @@ usage() {
     print "    --to ADDRESS                 Add a destination address where amount should be sent."
     print "    --verbose, -v                Print extra output."
     print
-    print "Example: build key-deposit.raw transaction file to send key deposit"
+    print "Example: build key-deposit.draft transaction file to send key deposit"
     print
     print "${scriptName} --name key-deposit \ "
     print "           --key-deposit \ "
     print "           --from \$(cat payment.addr) \ "
     print "           --certificate-file stake.cert"
     print
-    print "Example: build pool-deposit.raw transaction file to send pool deposit"
+    print "Example: build pool-deposit.draft transaction file to send pool deposit"
     print
     print "${scriptName} --name pool-deposit \ "
     print "           --pool-deposit \ "
@@ -33,14 +33,14 @@ usage() {
     print "           --certificate-file pool.cert \ "
     print "           --certificate-file deleg.cert"
     print
-    print "Example: build tip.raw transaction file to send 10 ADA tip to CoinCashew"
+    print "Example: build tip.draft transaction file to send 10 ADA tip to CoinCashew"
     print
     print "${scriptName} --name tip \ "
     print "           --lovelace 10000000 \ "
     print "           --from \$(cat payment.addr) \ "
     print "           --to ${coinCashew}"
     print
-    print "Example: build tx.raw transaction file to send 100 ADA to an address"
+    print "Example: build tx.draft transaction file to send 100 ADA to an address"
     print
     print "${scriptName} --name tx \ "
     print "           --ada 100 \ "
@@ -69,7 +69,7 @@ main() {
 
 summarize() {
     local prettyAmount=$(prettyLovelace ${amount})
-    print "\n===== $(date) ${bold}Building raw/unsigned transaction${normal} =====\n"
+    print "\n===== $(date) ${bold}Building draft/unsigned transaction${normal} =====\n"
     print "  ${cyan}amount${normal}: %s " "${prettyAmount}"
     [[ ${certificateFiles} ]] && print "   ${cyan}certs${normal}: %s" "${certificateFiles}"
     print "    ${cyan}from${normal}: ${bold}%s${normal}" ${fromAddress}
@@ -146,7 +146,7 @@ buildDraftTx() {
     command+=" --invalid-hereafter $(( ${currentSlot} + ${slotOffset} )) --fee ${fee}"
     [[ ${certificateFileArg} ]] && command+=" ${certificateFileArg}"
     command+="  --${era} --out-file ${txDraftFile}"
-    execute "${command}" "build raw tx"
+    execute "${command}" "build draft tx"
     print
     print "Created draft transaction ready to be signed in file ${bold}${txDraftFile}${normal}.\n"
     print "${bold}Please double check all values before signing and submitting!${normal}\n"

@@ -25,7 +25,10 @@ third would expect the `key-deposit.signed` file and append to the `key-deposit.
 The draft and sign steps have no permanent effect and can even be repeated; however, the submit step is clearly different. To 
 enable experimenting with the entire flow, the `submitTx.sh` script supports a `--dry-run` option which will cause it to skip 
 the actual submit command but log it anyway.
-  
+                                    
+To give you an idea of what the draftTx.sh script does, here is example terminal output:
+
+![plot](./img/draft-transaction.png)
 
 ## Drafting a Transaction
 ```
@@ -46,37 +49,35 @@ Options:
     --to ADDRESS                 Add a destination address where amount should be sent.
     --verbose, -v                Print extra output.
 
-Example: build key-deposit.raw transaction file to send key deposit
+Example: build key-deposit.draft transaction file to send key deposit
 
 draftTx.sh --name key-deposit \
-           --key-deposit \
-           --from $(cat payment.addr) \
-           --certificate-file stake.cert
+--key-deposit \
+--from $(cat payment.addr) \
+--certificate-file stake.cert
 
-Example: build pool-deposit.raw transaction file to send pool deposit
+Example: build pool-deposit.draft transaction file to send pool deposit
 
 draftTx.sh --name pool-deposit \
-           --pool-deposit \
-           --from $(cat payment.addr) \
-           --certificate-file pool.cert \
-           --certificate-file deleg.cert
+--pool-deposit \
+--from $(cat payment.addr) \
+--certificate-file pool.cert \
+--certificate-file deleg.cert
 
-Example: build tip.raw transaction file to send 10 ADA tip to CoinCashew
+Example: build tip.draft transaction file to send 10 ADA tip to CoinCashew
 
 draftTx.sh --name tip \
-           --lovelace 10000000 \
-           --from $(cat payment.addr) \
-           --to addr1qxhazv2dp8yvqwyxxlt7n7ufwhw582uqtcn9llqak736ptfyf8d2zwjceymcq6l5gxht0nx9zwazvtvnn22sl84tgkyq7guw7q
+--lovelace 10000000 \
+--from $(cat payment.addr) \
+--to addr1qxhazv2dp8yvqwyxxlt7n7ufwhw582uqtcn9llqak736ptfyf8d2zwjceymcq6l5gxht0nx9zwazvtvnn22sl84tgkyq7guw7q
 
-Example: build tx.raw transaction file to send 100 ADA to an address
+Example: build tx.draft transaction file to send 100 ADA to an address
 
 draftTx.sh --name tx \
-           --ada 100 \
-           --from $(cat from.addr) \
-           --to $(cat to.addr)
-
+--ada 100 \
+--from $(cat from.addr) \
+--to $(cat to.addr)
 ```
-
 ## Signing a transaction
 ```
 > signTx.sh --help
@@ -139,12 +140,12 @@ In this example we'll submit a key-deposit for a new pool. This assumes the foll
 draftTx.sh --name key-deposit --key-deposit --from $(cat payment.addr) --certificate-file stake.cert
 ```
 
-2. Copy the `key-deposit.draft` file to the air-gapped machine and on it:
+2. Copy the `key-deposit.draft` file to the air-gapped machine and on it run:
 ```bash
 signRawTx.sh --name key-deposit --signing-key-file stake.skey --signing-key-file payment.skey
 ```
 
-3. Copy the `key-deposit.signed` file to the block producer machine and on it:
+3. Copy the `key-deposit.signed` file to the block producer machine and on it run:
 ```bash
 submitTx.sh --name key-deposit
 ```
