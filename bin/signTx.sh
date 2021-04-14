@@ -2,7 +2,7 @@
 
 usage() {
     print
-    print "${bold}Sign draft transaction with one or more keys and store as .signed file${normal}"
+    print "${bold}Signs a draft transaction with one or more keys and stores as .signed file${normal}"
     print "All output is logged along with executed cardano-cli commands."
     print
     print "Usage: ${scriptName} --name NAME --signing-key-file FILE [--signing-key-file FILE]"

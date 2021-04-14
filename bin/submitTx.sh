@@ -2,7 +2,7 @@
 
 usage() {
     print
-    print "${bold}Submit a signed transaction.${normal}"
+    print "${bold}Submits a signed transaction.${normal}"
     print "All output is logged along with executed cardano-cli commands."
     print
     print "Usage: ${scriptName} --name NAME [--name NAME]"

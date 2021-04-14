@@ -3,7 +3,7 @@
 
 usage() {
     print
-    print "${bold}Build a draft transaction file ready to be signed, stored as .draft file.${normal}"
+    print "${bold}Builds a draft transaction file ready to be signed, stored as .draft file.${normal}"
     print "All output is logged along with executed cardano-cli commands."
     print
     print "Usage: ${scriptName} --name NAME --ada ADA | --lovelace LOVELACE | --key-deposit | --pool-deposit --from ADDRESS "
