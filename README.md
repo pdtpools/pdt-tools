@@ -1,10 +1,10 @@
 
 ## Transaction Scripts
 
-Creating a transaction with the `cardano-cli` is more complex than it ought to be. We discovered this while following the 
-excellent [CoinCashew](https://www.coincashew.com/coins/overview-ada/guide-how-to-build-a-haskell-stakepool-node) steps to 
-register our stake pool ([PDT1](https://pdtpools.io/)) and thought that at least some of it could be improved; this is our 
-attempt using wrapper scripts. 
+Creating a transaction with the `cardano-cli` tool is more complex than it ought to be. We discovered this while following
+the steps in the excellent [CoinCashew](https://www.coincashew.com/coins/overview-ada/guide-how-to-build-a-haskell-stakepool-node)
+documentation to register our stake pool ([PDT1](https://pdtpools.io/)) and thought that at least some of it could be improved; 
+this is our attempt using wrapper scripts. 
 
 > An important goal of ours is to submit a PR to CoinCashew updating the pool registration steps to use these scripts.
 
@@ -150,6 +150,6 @@ Usage: submitTx.sh --name NAME [--name NAME]
 
 Options:
 
-    --dry-run | --dry     Log but do no execute submit command.
+    --dry-run | --dry     Log but do not execute submit command.
 ```
                                                                

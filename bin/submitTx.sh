@@ -9,7 +9,7 @@ usage() {
     print
     print "Options:"
     print
-    print "    --dry-run | --dry     Log but do no execute submit command."
+    print "    --dry-run | --dry     Log but do not execute submit command."
     print
     if [[ ${1} ]]; then
         print "${red}ERROR:${normal} ${bold}${1}${normal}\n"
