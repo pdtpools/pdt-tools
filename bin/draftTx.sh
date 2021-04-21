@@ -82,7 +82,7 @@ collectUtxo() {
     local allUtxoPattern="^.*TxHash.*TxIx.*Amount.*$"
     [[ ${allUtxo} =~ ${allUtxoPattern} ]] || fail "utxo query failed"
     local balance=$(echo "${allUtxo}" | tail -n +3 | sort -k3 -nr)
-    [[ ${balance} ]] || fail "No transactions in this address"
+    [[ ${balance} ]] || fail "No utxos in this address"
     txCount=0
 
     while IFS= read -r utxo; do
